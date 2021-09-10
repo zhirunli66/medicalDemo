@@ -1,0 +1,407 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>JavaScript file upload</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <!-- <script src="https://wzrd.in/standalone/buffer"></script> -->
+    <script src="https://bundle.run/buffer@5.4.0"></script>
+    <script src="https://unpkg.com/ipfs-api@9.0.0/dist/index.js"
+    integrity="sha384-5bXRcW9kyxxnSMbOoHzraqa7Z0PQWIao+cgeg327zit1hz5LZCEbIMx/LWKPReuB"
+    crossorigin="anonymous"></script>
+
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
+    <script src="js/web3.min.js"></script>
+    <script type="text/javascript" src="js/echarts.min.js"></script>
+  <script src="js/truffle-contract.js"></script>
+  
+
+    <style>
+      .quarter-div{
+            width: 50%;
+            height: 50%;
+            float: left;
+        }
+      .first {
+          width: 50%;
+          float:left;
+          height: 500px;
+          border: 1px solid #3B6273;
+      }
+      .second {
+          width: 50%;
+          float:left;
+          height: 500px;
+          border: 1px solid #3B6273;
+          margin-right:-4px;
+      }
+      
+  </style>
+
+  </head>
+  <script>
+       const provider = new Web3.providers.HttpProvider('http://localhost:8545');
+       const web3 = new Web3(provider);
+      //web3Provider = ethereum;
+      ethereum.enable().then(function(accounts1){
+          web3.eth.defaultAccount = accounts1;
+          alert("A1"+web3.eth.defaultAccount);
+      }).catch(function(err){
+          alert("EEERRR:"+err);
+      });
+
+  </script>
+
+  <body>
+    
+    <div id="container" >
+
+     <div id="header" style="background-color:#FFA500;">
+        <h1 style="margin-bottom:0;">DoctorPage</h1>
+     </div>
+     <div class="core">
+      <fieldset>
+        <legend></legend>
+
+        <table style="text-align: left;">
+        
+               <tr>
+                <th>Username</th>
+                <td><input id="uname" type="text" /></td>
+               </tr>
+
+        </table>
+
+         <button type="button" onclick="showList()">Show</button>
+
+      </fieldset>
+
+
+     </div>
+     <div class="core">
+     <div class="quarter-div first">
+      <table cellspacing="0" id="tQuestion"  rules="all" class="mainTab" style="width: 100%;border: 1px;">
+        <tr>
+           <th>
+            Title
+        </th>
+            <th>
+                Version
+         </th>
+             <th>
+              Action
+         </th>
+        </tr>
+        <tr>
+          <td id="title1"></td>
+          <td id="v1"></td>
+          <td><input id="s1" type="submit" onclick="showInfo(this.id)" value="View"  /></td>
+
+      </tr>
+      <tr>
+        <td id="title2">  </td>
+        <td id="v2"></td>
+        <td><input id="s2" type="submit" onclick="showInfo(this.id);" value="View" /></td>
+
+    </tr>
+        <tr>
+            <td> <a id="purl1"></a> </td>
+            <td id="v1"></td>
+            <td></td>
+
+        </tr>
+        <tr>
+
+          <td > <a id="purl2"></a> </td>
+            <td id="v1"></td>
+            <td></td>
+        </tr>
+    </table>
+      
+
+    
+    </div>
+
+    <div class="quarter-div second"> 
+    
+      <div id="main" type="line" style="width: 600px;height:400px;"></div>
+
+    </div> 
+
+    </div>
+    
+      <div id="footer" style="background-color:#FFA500;clear:both;text-align:center;">
+        Doctor Page
+      </div>
+    </div>
+
+
+
+  </body>
+  <script type="text/javascript">
+
+  function showChart(_addr){
+
+    var abi=null;
+    var contractAddress="0x6ae17738c9030c07D6B293e8adc0857b9e05fcB4";
+    $.getJSON('HealthInfo.json', function(data){
+
+alert("ContractName:"+data.contractName);
+abi = data.abi;
+var HealthInfoContract = web3.eth.contract(abi);
+var HealthInfo = HealthInfoContract.at(contractAddress);   //初始化   
+var nowAcc=_addr;   
+
+var tempSet=[];
+
+
+var myEvent = HealthInfo.ShowList();
+myEvent.watch(function(err, result) {      
+           if (!err) {
+              
+            
+               for(var i=0;i<7;i++){
+                  tempSet[i]= result.args.tempSet[i]
+               }
+               
+            } else {
+                  console.log(err);
+            }
+
+          myEvent.stopWatching();
+   
+          drawChart(tempSet);
+      
+
+
+    });
+
+HealthInfo.showList(nowAcc);
+
+    
+});
+
+  }
+
+  function drawChart(tempSet){
+
+var myChart = echarts.init(document.getElementById('main'));
+var option = {
+
+backgroundColor: '#FFF0F5',
+
+title: {
+text: 'Seven-day body temperature change line chart',
+x: 'center'
+},
+
+legend: {
+
+orient: 'horizontal',
+x: 'left',
+y: 'top'
+},
+
+grid: {
+ top: '16%',   // 等价于 y: '16%'
+ left: '6%', 
+ right: '8%',
+ bottom: '3%',
+ containLabel: true
+},
+
+
+tooltip: {
+trigger: 'axis'
+},
+
+
+toolbox: {
+ feature: {
+     
+ }
+},
+
+xAxis: {
+name: 'Days',
+type: 'category',
+axisLine: {
+ lineStyle: {
+
+   color: '#912CEE'
+ }
+},
+
+axisLabel: {
+ rotate: 30, 
+ interval: 0  
+ },
+
+boundaryGap: false,
+data: ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th']
+},
+
+yAxis: {
+name: 'Celsius',
+type: 'value',
+min:34.0, 
+max:45.0, 
+splitNumber:9,  
+axisLine: {
+ lineStyle: {
+   
+   color: '#87CEFA'
+ }
+},
+},
+
+series: [
+
+{
+ name: 'BodyTemperature',
+ data: [tempSet[0], tempSet[1], tempSet[2], tempSet[3], tempSet[4], tempSet[5], tempSet[6]],
+ type: 'line',
+ 
+ symbolSize:8,
+ itemStyle:{
+   normal:{
+     
+     label : {
+     show: true
+     },
+     borderColor:'red',  
+     lineStyle:{                 
+       width:5,  
+       type:'solid'  
+     }
+   }
+ }
+},
+
+
+],
+
+//color: ['#00EE00', '#FF9F7F','#FFD700']
+color: [ '#FF9F7F']
+};
+
+
+myChart.setOption(option);
+
+  }
+    
+    
+  </script>
+<script>
+function showInfo(_id){
+
+    var abi=null;
+    var contractAddress="0x6ae17738c9030c07D6B293e8adc0857b9e05fcB4";
+
+    $.getJSON('TestAccess.json', function(data){
+
+alert("ContractName:"+data.contractName);
+abi = data.abi;
+var TestAccessContract = web3.eth.contract(abi);
+var TestAccess = TestAccessContract.at(contractAddress);           
+
+
+var flag;
+
+if(TestAccess.isDoctor(acc)){
+  alert("Doctor");
+}else if(TestAccess.isUser(acc)){
+  alert("User");
+}else if(TestAccess.isTemp(acc)){
+alert("Temp");
+flag=true;
+}else if(TestAccess.isAdmin(acc)){
+alert("Admin");
+}
+
+    
+});
+
+  if(flag){
+    var href0=document.getElementById(_id).href;
+    window.location.href(href0);
+}
+
+  }
+
+
+
+
+</script>
+ 
+
+  <script>
+function showList(){
+  var uname = document.getElementById("uname");
+  var userAddr;
+
+  var abi=null;
+  var contractAddress="0xB0d9491eaFB6C5532294456888400A6E234320E7";
+
+     $.getJSON('User.json', function(data){
+
+
+      abi = data.abi;
+      var UserContract = web3.eth.contract(abi);
+      var User = UserContract.at(contractAddress);   //初始化        
+      var nowAcc = web3.eth.defaultAccount;
+      userAddr=User.getUserByUname;
+});
+
+
+  var abi1=null;
+  var contractAddress1="0xB0d9491eaFB6C5532294456888400A6E234320E7";
+  $.getJSON('PhotoIpfs.json', function(data){
+
+   abi1 = data.abi;
+   var PhotoIpfsContract = web3.eth.contract(abi1);
+   var PhotoIpfs = PhotoIpfsContract.at(contractAddress1);   //初始化        
+   var nowAcc1 = web3.eth.defaultAccount;
+
+   var myEvent = PhotoIpfs.StorageU();
+     myEvent.watch(function(err, result) {      
+           if (!err) {
+                console.log("ResultU?"+result.transactionHash);
+                console.log("TestSet0:"+result.args.testSet[0]);
+                console.log("TestSet1:"+result.args.testSet[1]);
+                console.log("Hsize:"+result.args.testSet.length);
+
+                var inum1 =  result.args.testSet[0].toString();
+                var inum2 =  result.args.testSet[1].toString();
+                var hash1= PhotoIpfs.getHashByPid(inum1);
+                var hash2= PhotoIpfs.getHashByPid(inum2);
+
+                //let url = `http://127.0.0.1:8080/ipfs/${result[0].hash}`
+                
+                let url = `http://127.0.0.1:8080/ipfs/`
+                let url1 = url+hash1;
+                let url2 = url+hash2;
+                
+                document.getElementById("purl1").innerHTML="Photo V1";
+                document.getElementById("purl1").href= url1
+                document.getElementById("purl2").innerHTML="Photo v2";
+                document.getElementById("purl2").href= url2
+            } else {
+                  console.log(err);
+            }
+
+          myEvent1.stopWatching();
+          alert("JumpOut");
+    });
+
+
+    var showPhoto=PhotoIpfs.showList(userAddr,{from: web3.eth.defaultAccount,gas:3000000});
+});
+
+
+showChart(userAddr);
+
+}
+
+  </script>
+</html>

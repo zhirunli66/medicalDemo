@@ -1,0 +1,639 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>JavaScript file upload</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <!-- <script src="https://wzrd.in/standalone/buffer"></script> -->
+    <script src="https://bundle.run/buffer@5.4.0"></script>
+    <script src="https://unpkg.com/ipfs-api@9.0.0/dist/index.js"
+    integrity="sha384-5bXRcW9kyxxnSMbOoHzraqa7Z0PQWIao+cgeg327zit1hz5LZCEbIMx/LWKPReuB"
+    crossorigin="anonymous"></script>
+
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
+    <script src="js/web3.min.js"></script>
+    <script type="text/javascript" src="js/echarts.min.js"></script>
+  <script src="js/truffle-contract.js"></script>
+  
+
+    <style>
+      .quarter-div{
+            width: 50%;
+            height: 50%;
+            float: left;
+        }
+      .first {
+          width: 50%;
+          float:left;
+          height: 500px;
+          border: 1px solid #3B6273;
+      }
+      .second {
+          width: 50%;
+          float:left;
+          height: 500px;
+          border: 1px solid #3B6273;
+          margin-right:-4px;
+      }
+      .third {
+          width: 50%;
+          float:left;
+          height: 250px;
+          border: 1px solid #3B6273;
+          
+      }
+      .fourth {
+          width: 50%;
+          float:left;
+          height: 250px;
+          border: 1px solid #3B6273;
+          margin-right:-4px;
+      }
+  </style>
+
+  </head>
+  <script>
+       const provider = new Web3.providers.HttpProvider('http://localhost:8545');
+       const web3 = new Web3(provider);
+      //web3Provider = ethereum;
+      ethereum.enable().then(function(accounts1){
+          web3.eth.defaultAccount = accounts1;
+          alert("A1"+web3.eth.defaultAccount);
+      }).catch(function(err){
+          alert("EEERRR:"+err);
+      });
+
+  </script>
+  
+  <script type="text/javascript">
+
+    function upload() {
+      alert("?");
+
+      var fileName=null;
+
+      const reader = new FileReader();
+      reader.onloadend = function() {
+
+        alert("FileName:"+fileName);
+        const ipfs = window.IpfsApi('127.0.0.1', 5001) // Connect to IPFS
+        const buf = buffer.Buffer(reader.result) // Convert data into buffer
+       
+        console.log("Reader:"+reader.result);
+        ipfs.files.add(buf, (err, result) => { // Upload buffer to IPFS
+          if(err) {
+            console.error(err)
+            return
+          }
+          alert("L"+result.length)
+
+          var abi=null;
+          var contractAddress="0xd8a7c244eD6eA9B82B5903eC18c415441A59744D";
+          $.getJSON('PhotoIpfs.json', function(data){
+
+            alert("ContractName:"+data.contractName);
+            
+            abi = data.abi;
+            var PhotoContract = web3.eth.contract(abi);
+            alert(abi);
+            var PhotoIpfs = PhotoContract.at(contractAddress);
+            //alert("Coninbase:"+web3.eth.coinbase); 
+           // web3.eth.defaultAccount=web3.eth.coinbase;
+            alert("DefaultAccount:"+web3.eth.defaultAccount);
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+            var myEvent = PhotoIpfs.StorageE();           
+            myEvent.watch(function(err, result) {      
+
+             if (!err) {
+                console.log("Result?"+result.transactionHash);
+                console.log("Ad?"+result.args.ad);
+                console.log("Flag?"+result.args.flag);
+                console.log("Msize?"+result.args.msize);
+              //  alert("TXHash:"+txHash);
+
+                 if(result.transactionHash == txHash){
+                 alert("Same txHashYYY");
+               }else{
+                  alert("HHH:"+result.transactionHash);
+               }
+        } else {
+             alert("JJJ");
+             console.log(err);
+        }
+
+        myEvent.stopWatching();
+        alert("Cross0");
+        var vv=PhotoIpfs.showList(web3.eth.defaultAccount,{from: web3.eth.defaultAccount,gas:3000000});
+
+     });
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+     var myEvent1 = PhotoIpfs.StorageU();
+     myEvent1.watch(function(err, result) {      
+           if (!err) {
+                console.log("ResultU?"+result.transactionHash);
+                console.log("TestSet0:"+result.args.testSet[0]);
+                console.log("TestSet1:"+result.args.testSet[1]);
+                console.log("Hsize:"+result.args.testSet.length);
+
+                var inum =  result.args.testSet[0].toString();
+                var hash1= PhotoIpfs.getHashByPid(inum);
+                var hash2= PhotoIpfs.getHashByPid("1");
+
+                //let url = `http://127.0.0.1:8080/ipfs/${result[0].hash}`
+                
+                let url = `http://127.0.0.1:8080/ipfs/`
+                let url1 = url+hash1;
+                let url2 = url+hash2;
+                
+                document.getElementById("purl1").innerHTML="Photo V1";
+                document.getElementById("purl1").href= url1
+                document.getElementById("purl2").innerHTML="Photo v2";
+                document.getElementById("purl2").href= url2
+              //  document.getElementById("output").src = url
+             //   console.log("ResultTest:"+result.args.testSet[0]);
+             //   console.log("ResultTest:"+result.args.testSet[1]);
+            } else {
+                  alert("JJJ");
+                  console.log(err);
+            }
+
+          myEvent1.stopWatching();
+          alert("JumpOut");
+    });
+     
+ ///////////////////////////////////////////////////////////////////////     
+
+        var h= result[0].hash;
+
+        //    if(!PhotoIpfs.hasHash(h)){
+             //  alert("EEE:"+User.hasAddress(uad));
+         //      alert("Existed");
+        //      }else{  
+                alert("MMM1");
+                
+                var nowAcc = web3.eth.defaultAccount;
+               var txHash=PhotoIpfs.storeHash(nowAcc,h,fileName,"20210901",{from: web3.eth.defaultAccount,gas:3000000});
+              // myEvent.stopWatching();
+               alert("Step1");
+     
+      //    }
+       //   var vv=PhotoIpfs.sum5();
+            //    alert("VV:");
+
+
+});
+
+        })
+      }
+      const photo = document.getElementById("photo");
+      reader.readAsArrayBuffer(photo.files[0]); // Read Provided File
+      fileName=photo.files[0].name;
+      //alert("TestName："+photo.files[0].name);
+    }
+  </script>
+  <script type="text/javascript">
+    function upload1() {
+      const reader = new FileReader();
+      reader.onloadend = function() {
+        const ipfs = window.IpfsApi('127.0.0.1', 5001) // Connect to IPFS
+        const buf = buffer.Buffer(reader.result) // Convert data into buffer
+        ipfs.files.add(buf, (err, result) => { // Upload buffer to IPFS
+          if(err) {
+            console.error(err)
+            return
+          }
+          alert(result[0].hash);
+          alert(result[0].name);
+        //  var link = document.createElement('a');
+        
+        })
+      }
+      
+    }
+
+  </script>
+  <script type="text/javascript">
+    function uploadForm() {
+
+      var sym=[];
+      var stime=document.getElementById("stime").value;
+      var pcode=document.getElementById("postcode").value;
+
+      if($('#s1').is(':checked')) {
+        sym.push(1);
+}else{
+  sym.push(0);
+}
+
+      if($('#s2').is(':checked')) { 
+        sym.push(1);
+}else{
+  sym.push(0);
+}
+
+      if($('#s3').is(':checked')) { 
+        sym.push(1);
+}else{
+  sym.push(0);
+}
+
+
+      if($('#s4').is(':checked')) { 
+        sym.push(1);
+}else{
+  sym.push(0);
+}
+
+      if($('#s5').is(':checked')) { 
+        sym.push(1);
+}else{
+  sym.push(0);
+}
+      if($('#s6').is(':checked')) { 
+        sym.push(1);
+}else{
+  sym.push(0);
+}
+
+     alert(sym);
+     
+      
+     var abi=null;
+     var contractAddress="0x254218B6875aaBEF14f82AE7E523F06000CE7B3a";
+
+     $.getJSON('HealthInfo.json', function(data){
+
+
+      abi = data.abi;
+      var HealthInfoContract = web3.eth.contract(abi);
+      var HealthInfo = HealthInfoContract.at(contractAddress);   //初始化        
+      var nowAcc = web3.eth.defaultAccount;
+     
+
+      HealthInfo.addHealth(nowAcc,sym,stime,pcode,{from: web3.eth.defaultAccount,gas:3000000});
+      alert("Test0:"+HealthInfo.findSym(nowAcc));
+  
+
+      var myEvent = HealthInfo.ShowList();
+
+        myEvent.watch(function(err, result) {      
+           if (!err) {
+              
+                var inum1 =  result.args.uintSet[0].toString();
+                var inum2 =  result.args.uintSet[1].toString();
+                var str1 =  result.args.timeSet[0];
+                var str2 =  result.args.timwSet[1];
+               
+                document.getElementById("hurl1").innerHTML="Health";
+                document.getElementById("hurl2").innerHTML="Heatlh";
+                document.getElementById("hurl1").value=inum1;
+                document.getElementById("hurl2").value=inum2;
+
+                document.getElementById("v1").innerHTML="v:"+str1;
+                document.getElementById("v2").innerHTML="v:"+str2;
+               
+            } else {
+                  console.log(err);
+            }
+
+          myEvent.stopWatching();
+          alert("JumpOut");
+
+      var _id ;
+      if(id=="s1"){
+         _id= document.getElementById(hurl1);
+
+      }else if(id=="s2"){
+         _id = document.getElementById(hurl2);
+
+      }
+
+      var _time,uset, _time = HealthInfo.findById(_id);
+
+
+    });
+
+
+});
+  
+    }
+
+
+
+    function uploadPersonal(){
+
+
+      var pbasic=[];
+      var _contact=document.getElementById("contact").value;
+      var _pcode=document.getElementById("postcode").value;
+      var _gender=document.getElementById("gender").value;
+      var _age=document.getElementById("age").value;
+
+      if($('#p1').is(':checked')) {
+        sym.push(1);
+}else{
+  sym.push(0);
+}
+
+      if($('#p2').is(':checked')) { 
+        sym.push(1);
+}else{
+  sym.push(0);
+}
+
+      if($('#p3').is(':checked')) { 
+        sym.push(1);
+}else{
+  sym.push(0);
+}
+
+
+      if($('#p4').is(':checked')) { 
+        sym.push(1);
+      }else{
+       sym.push(0);
+           }
+
+
+     var abi=null;
+     var contractAddress="0x26D7b5336885C942ADe2DC90dD39F74de1dfe4F6";
+
+     $.getJSON('PersonalInfo.json', function(data){
+
+
+      abi = data.abi;
+      var PersonalInfoContract = web3.eth.contract(abi);
+      var PersonalInfo = PersonalInfoContract.at(contractAddress);   //初始化        
+      var nowAcc = web3.eth.defaultAccount;
+     
+
+      PersonalInfo.addPersonal(nowAcc,_contact,_age,_gender,_pbasic,_pcode,{from: web3.eth.defaultAccount,gas:3000000});
+      alert("Test0:"+PersonalInfo.findSym(nowAcc));
+  
+
+      var myEvent1 = PersonalInfo.ShowList();
+
+        myEvent1.watch(function(err, result) {      
+           if (!err) {
+              
+                var inum1 =  result.args.uintSet[0].toString();
+                var inum2 =  result.args.uintSet[1].toString();
+                var str1 =  result.args.strSet[1].toString();
+                var str2 =  result.args.strSet[2].toString();
+               
+                document.getElementById("hurl1").innerHTML="Personal";
+                document.getElementById("hurl2").innerHTML="Personal";
+                document.getElementById("hurl1").value=inum1;
+                document.getElementById("hurl2").value=inum2;
+
+                document.getElementById("v1").innerHTML="v:"+str1;
+                document.getElementById("v2").innerHTML="v:"+str2;
+               
+            } else {
+                  console.log(err);
+            }
+
+          myEvent1.stopWatching();
+          alert("JumpOut");
+
+
+          var _id ;
+      if(id=="s1"){
+         _id= document.getElementById(hurl1);
+
+      }else if(id=="s2"){
+         _id = document.getElementById(hurl2);
+
+      }
+
+      var _time,uset, _time = PersonalInfo.findById(_id);
+      alert("");
+    });
+
+
+});
+
+
+    }
+  </script>
+  <body>
+    
+    <div id="container" >
+
+     <div id="header" style="background-color:#FFA500;">
+        <h1 style="margin-bottom:0;">UserPage</h1>
+     </div>
+     <div class="core">
+     <div class="quarter-div first">
+
+      
+
+      <fieldset>
+        <legend>Health information</legend>
+
+        <table style="text-align: left;">
+               <tr>
+                 <th>Date</th>
+                 <td><input id="stime" type="date" /></td>
+
+                 
+                 
+               </tr>
+              
+               <tr>
+                 <th>Symptom</th>
+                 <td>  <input type="checkbox" id="s1" name='hobby' >Cough</td>
+                 <td>  <input type="checkbox" id="s2" name='hobby' >Fever</td>              
+               </tr>
+               <tr>
+                <td>  <input type="hidden"   name='hobby' value='1'></td>
+                <td>  <input type="checkbox" id="s3" name='hobby' >Sore throat</td>
+                 <td>  <input type="checkbox" id="s4" name='hobby' >Difficulty breathing</td>     
+               </tr>
+               <tr>
+                <td>  <input type="hidden" name='hobby' value='1'></td>
+                <td>  <input type="checkbox" id="s5" name='hobby' >Loss of smell</td>
+                 <td>  <input type="checkbox" id="s6" name='hobby' >Loss of taste</td>     
+               </tr>
+               
+               <tr>
+                <th>Body temperature</th>
+                <td><input type="number" /></td>
+
+               </tr>
+               
+
+
+        </table>
+
+  <button type="button" onclick="uploadForm()">Upload</button>
+
+      </fieldset>
+
+
+      <fieldset>
+        <legend>Personal information</legend>
+
+        <table style="text-align: left;">
+               <tr>
+                 <th>Contact information</th>
+                 <td><input id="contact“ type="email" /></td>   
+               </tr>
+               <tr>
+                <th>Postcode</th>
+                <td><input id ="postcode" type="text"/></td>
+               </tr>
+               <tr>
+                <th>Gender</th>
+                <td><input id="gender" type="text" /></td>
+               </tr>
+
+               <tr>
+                <th>Age</th>
+                <td><input id="age" type="number" /></td>
+               </tr>
+               <tr>
+                <th>Basic medical history</th>
+                <td>  <input type="checkbox" id="p1" >Hypertension</td>
+                <td>  <input type="checkbox" id="p2" >Diabetes</td>              
+              </tr>
+              <tr>
+               <td>  <input type="hidden"   ></td>
+               <td>  <input type="checkbox" id="p3" >Heart disease</td>
+                <td>  <input type="checkbox" id="p4">Immune diseases</td>     
+              </tr>
+        </table>
+  
+       
+  <button type="button" onclick="uploadPersonal()">Upload</button>
+
+  
+
+      </fieldset>
+
+
+      <!--
+ <fieldset>
+        <legend>Upload photo</legend>
+        <input type="file" name="photo" id="photo" multiple="multiple">
+        <button type="button" onclick="upload()">Upload</button>
+      </fieldset>
+
+      -->
+
+     
+
+      
+
+     
+
+    </div>
+    <div class="quarter-div second"> 
+      <table cellspacing="0" id="tQuestion"  rules="all" class="mainTab" style="width: 100%;border: 1px;">
+        <tr>
+           <th>
+            Title
+        </th>
+            <th>
+                Version
+         </th>
+             <th>
+              Action
+         </th>
+        </tr>
+        <tr>
+          <td id="title1"></td>
+          <td id="v1"></td>
+          <td><input id="s1" type="submit" onclick="showInfo(this.id)" value="View"  /></td>
+
+      </tr>
+      <tr>
+        <td id="title2">  </td>
+        <td id="v2"></td>
+        <td><input id="s2" type="submit" onclick="showInfo(this.id);" value="View" /></td>
+
+    </tr>
+
+
+        <tr>
+            <td> <a id="purl1"></a> </td>
+            <td id="v1"></td>
+            <td></td>
+
+        </tr>
+        <tr>
+
+          <td > <a id="purl2"></a> </td>
+            <td id="v1"></td>
+            <td></td>
+        </tr>
+    </table>
+
+
+    </div> 
+    <div class ="quarter-div third"> 
+
+      
+      <fieldset>
+        <legend>Upload photo</legend>
+        <input type="file" name="photo" id="photo" multiple="multiple">
+        <button type="button" onclick="upload()">Upload</button>
+      </fieldset>
+    </div>
+    
+
+    <div class ="quarter-div fourth">
+
+
+      <table cellspacing="0" id="tQuestion"  rules="all" class="mainTab" style="width: 100%;border: 1px;">
+        <tr>
+           <th>
+               Title
+        </th>
+            <th>
+                Version
+         </th>
+             <th>
+                Action
+         </th>
+        </tr>
+        <tr>
+            <td > <a id="url1"></a> </td>
+            <td></td>
+            <td></td>
+
+        </tr>
+        <tr>
+
+          <td > <a id="url2"></a> </td>
+            <td></td>
+            <td></td>
+        </tr>
+    </table>
+    </div>
+    
+    </div>
+    
+      <div id="footer" style="background-color:#FFA500;clear:both;text-align:center;">
+        UserPage
+      </div>
+    </div>
+
+
+
+  </body>
+
+ 
+
+  <script>
+function addtr(id) {
+    tr_id = $("#tQuestion>tbody>tr:last").attr("id");
+    tr_id++;
+    $('#' + id).append(GetStr(tr_id));
+}
+
+  </script>
+</html>

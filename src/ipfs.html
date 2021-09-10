@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Medical Platform Demo </title>
+
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
+    <script src="https://unpkg.com/ipfs-http-client/dist/index.min.js" crossorigin="anonymous"></script>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <style type="text/css">
+    .head-img{
+    text-align: center;
+}
+     
+  </style>
+<script>
+
+//const ipfsClient = require('ipfs-http-client');
+//const { globSource } = ipfsClient;
+//const ipfsEndPoint = 'http://localhost:5001'
+//const ipfs = ipfsClient(ipfsEndPoint);
+//var ipfsAPI = require('ipfs-api');
+
+</script>
+
+<script>
+ 
+alert("HHH");
+  const ipfs = window.IpfsHttpClient({host: '127.0.0.1', port: 5001})
+
+  
+  console.log(ipfs)
+
+
+ 
+</script>
+<script>
+  $(function(){
+     getData1();
+  });
+
+  function getData1(){
+    //  var name = $.query.get("account");
+    //  var age = $.query.get("age");
+
+      $("#account").text(account);
+    //  $("#age").text(age);
+  }
+</script>
+<style type="text/css">
+  /*p,input,button{
+      text-align: center;
+  }*/
+  div{
+      text-align: center;
+  } 
+  table {
+  border-collapse: separate;
+}
+</style>
+  </head>
+  <body>
+
+    <div id="account" name="account"></div>
+    <div class="container">
+      <div class="row">
+        <div class="col-xs-12 col-sm-8 col-sm-push-2">
+          <h1 class="text-align" >Log In Page</h1>
+          <hr/>
+          <br/>
+        </div>
+      </div>
+
+      <div id="petsRow" class="row">
+        <!-- PETS LOAD HERE -->
+      </div>
+    </div>
+
+ 
+
+    <div >
+      <img id="loader" src="./redcross.jpeg">
+   </div>
+
+    <div class="text-center">
+           <table   style="margin: auto;" cellspacing=50 >
+             
+            <tr>
+              <th>   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+              <td>testUser-Incidence-V1</td>
+              <td><button id="button" onclick="login();">Apply</button></td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <td><button id="button" onclick="login();">Browse</button></td>
+               </tr>
+               <tr>
+                <th>   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                <td>testUser-Incidence-V2</td>
+                <td><button id="button" onclick="login();">Apply</button></td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <td><button id="button" onclick="login();">Browse</button></td>
+                 </tr>
+                 <tr>
+                  <th>   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                  <td>testUser-Incidence-V3</td>
+                  <td><button id="button" onclick="lo();">Apply</button></td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  <td><button id="button" onclick="login();">Browse</button></td>
+                   </tr>
+
+           </table>
+
+
+    </div>
+
+    
+    <div style="height: 100px;"></div>
+
+    
+
+    <div class="head-img">
+
+      <table style="margin: auto;" cellspacing=50>
+
+        <tr>
+<td style="width: 20;"> <label  for="name"  class="text-center">Upload File     ：</label></td>
+<td> <input  id="age" type="file" class="text-center"></td>
+        </tr>
+        <tr>
+            <td> <label id="fileText">Choose file to upload</label> </td>
+            <td> <input type="file" ref="file" id="uploadFile" name="myFiles" onchange="UpdateOnChange(this)" multiple="上传文件"/></td>
+
+        </tr>
+      </table>
+
+      <table style="margin: auto;" cellspacing=50>
+
+        <tr>
+         <td style="width: 20;"> <label  for="name"  class="text-center">Upload File     ：</label></td>
+         <td> <input  id="age" type="file" class="text-center"></td>
+        </tr>
+        <tr>
+            <td> <label id="fileText">Choose file to upload</label> </td>
+            <td> <input type="file" ref="file" id="uploadFile" name="myFiles" onchange="UpdateOnChange(this)" multiple="上传文件"/></td>
+
+        </tr>
+      </table>
+     
+      
+      
+       
+
+     
+      
+    </div>
+    <div style="height: 30px;"></div>
+
+
+    
+  
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/web3.min.js"></script>
+    <script src="js/truffle-contract.js"></script>
+    <script src="js/app.js"></script>
+
+    <script>
+ function saveImageONIpfs(reader){
+   return new Promise(function(resole,reject){
+     const buffer =Buffer.from(resolve,reject);
+     var response =ipfs.add(buffer);
+     console("WWWo:"+response);
+     resolve(response[0].hash);
+   })
+
+ }     
+
+function UpdateOnChange(that){
+
+  var file = this.refs.file.files[0];
+  var reader = new FileReader();
+  reader.readAsArrayBuffer(file);
+  reader.onloadend=function(e){
+    console.log(reader);
+  }
+	redFile(that,function(name,data){
+		var digest = sha256(data);
+		document.getElementById('hash').value= digest;
+	})
+
+}
+      function getAdd(){
+        alert("will jump");
+      }
+    </script>
+  </body>
+</html>

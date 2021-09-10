@@ -1,0 +1,204 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>JavaScript file upload</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <!-- <script src="https://wzrd.in/standalone/buffer"></script> -->
+    <script src="https://bundle.run/buffer@5.4.0"></script>
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
+  
+    <script src="js/bootstrap.min.js"></script>
+    <script src="https://unpkg.com/ipfs-api@9.0.0/dist/index.js"
+    integrity="sha384-5bXRcW9kyxxnSMbOoHzraqa7Z0PQWIao+cgeg327zit1hz5LZCEbIMx/LWKPReuB"
+    crossorigin="anonymous"></script>
+
+    <script type="text/javascript" src="js/echarts.min.js"></script>
+
+
+    <style>
+      .quarter-div{
+            width: 50%;
+            height: 50%;
+            float: left;
+        }
+      .first {
+          width: 50%;
+          float:left;
+          height: 500px;
+          border: 1px solid #3B6273;
+      }
+      .second {
+          width: 50%;
+          float:left;
+          height: 500px;
+          border: 1px solid #3B6273;
+          margin-right:-4px;
+      }
+      
+  </style>
+  </head>
+  <script>
+    var a = GetRequest();
+    console.log(a);
+
+    function GetRequest() {
+        var url = location.search; //获取url中"?"符后的字串
+        var theRequest = new Object();
+        if (url.indexOf("?") != -1) {
+            var str = url.substr(1);
+            strs = str.split("&");
+            for (var i = 0; i < strs.length; i++) {
+                theRequest[strs[i].split("=")[0]] = decodeURIComponent(strs[i].split("=")[1]);
+            }
+        }
+        return theRequest;
+    }
+</script>
+
+  <body>
+
+    <div id="container" >
+      <div id="header" style="background-color:#FFA500;">
+        <h1 style="margin-bottom:0;">AdminPage</h1>
+     </div>
+
+     <div class="core">
+      <div class="quarter-div first"> 
+        <table>
+    <tr>
+      <th>Account:</th>
+      <td><input id="acc" type="text" /></td>
+    </tr>
+    <tr>
+      <th>Role:</th>
+      <td>
+        <select id="selectRole">
+          <option value="doctor">Doctor</option>
+          <option value="user">User</option>
+          <option value="admin">Admin</option>
+        </select>
+      </td>
+    </tr>
+    <tr>
+      <td><button  id="button" onclick="setRole();">SetRole</button></td>
+    </tr>
+    
+        </table>
+        
+    </div>
+
+    <div class="quarter-div second">
+
+
+      <!--
+
+<div id="main" style="width: 600px;height:400px;"></div>
+      -->
+      
+        
+
+
+
+
+    </div>
+
+
+     </div>
+
+
+     <div id="footer" style="background-color:#FFA500;clear:both;text-align:center;">
+      AdminPage
+    </div>
+
+
+    </div>
+
+ 
+
+
+<script src="js/web3.min.js"></script>
+<script>
+
+  function setRole(){
+    var role=document.getElementById("selectRole").value;
+    var acc= document.getElementById("acc").value;
+    alert("Acc:"+acc);
+    alert("Role:"+role);
+
+
+    const provider = new Web3.providers.HttpProvider('http://localhost:8545');
+    const web3 = new Web3(provider);
+
+    var abi=null;
+    var contractAddress="0x6ae17738c9030c07D6B293e8adc0857b9e05fcB4";
+    
+    $.getJSON('TestAccess.json', function(data){
+
+alert("ContractName:"+data.contractName);
+abi = data.abi;
+var TestAccessContract = web3.eth.contract(abi);
+var TestAccess = TestAccessContract.at(contractAddress);   //初始化        
+// alert("Coninbase:"+web3.eth.coinbase); 
+web3.eth.defaultAccount=web3.eth.coinbase;
+
+
+alert("Start Add");
+
+if(role=="doctor"){
+  TestAccess.addDoctor(acc);
+}else if(role=="user"){
+  TestAccess.addUser(acc);
+}else if(role="admin"){
+  TestAccess.addAdmin(acc);
+}
+
+alert("Finish Add, Start Judge ");
+
+if(TestAccess.isDoctor(acc)){
+  alert("Doctor");
+}else if(TestAccess.isUser(acc)){
+  alert("User");
+}else if(TestAccess.isTemp(acc)){
+alert("Temp");
+}else if(TestAccess.isAdmin(acc)){
+alert("Admin");
+}
+
+    
+});
+  }
+
+
+</script>
+
+<script type="text/javascript">
+  // 基于准备好的dom，初始化echarts实例
+  var myChart = echarts.init(document.getElementById('main'));
+
+  // 指定图表的配置项和数据
+  var option = {
+      title: {
+          text: '第一个 ECharts 实例'
+      },
+      tooltip: {},
+      legend: {
+          data:['销量']
+      },
+      xAxis: {
+          data: ["衬衫","羊毛衫","雪纺衫","裤子","高跟鞋","袜子"]
+      },
+      yAxis: {},
+      series: [{
+          name: '销量',
+          type: 'bar',
+          data: [5, 20, 36, 10, 10, 20]
+      }]
+  };
+
+  // 使用刚指定的配置项和数据显示图表。
+  myChart.setOption(option);
+</script>
+
+  </body>
+</html>

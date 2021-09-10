@@ -1,0 +1,206 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>JavaScript file upload</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <!-- <script src="https://wzrd.in/standalone/buffer"></script> -->
+    <script src="https://bundle.run/buffer@5.4.0"></script>
+    <script src="https://unpkg.com/ipfs-api@9.0.0/dist/index.js"
+    integrity="sha384-5bXRcW9kyxxnSMbOoHzraqa7Z0PQWIao+cgeg327zit1hz5LZCEbIMx/LWKPReuB"
+    crossorigin="anonymous"></script>
+  </head>
+  <script type="text/javascript">
+
+    function upload() {
+
+      const reader = new FileReader();
+      reader.onloadend = function() {
+        const ipfs = window.IpfsApi('127.0.0.1', 5001) // Connect to IPFS
+        const buf = buffer.Buffer(reader.result) // Convert data into buffer
+        ipfs.files.add(buf, (err, result) => { // Upload buffer to IPFS
+          if(err) {
+            console.error(err)
+            return
+          }
+          alert("L"+result.length)
+          let url = `http://127.0.0.1:8080/ipfs/${result[0].hash}`
+          console.log(`Url --> ${url}`)
+          document.getElementById("url").innerHTML="kk";
+          document.getElementById("url").href= url
+          document.getElementById("output").src = url
+
+          var abi=null;
+          var contractAddress="0x78cfacaD568c821F814a6787857e160bE895cbF7";
+          $.getJSON('User.json', function(data){
+
+            alert("ContractName:"+data.contractName);
+            alert("ContractN:"+data.id);
+            abi = data.abi;
+            var UserContract = web3.eth.contract(abi);
+            alert(abi);
+            var User = UserContract.at(contractAddress);
+            alert("Why");
+            alert("Coninbase:"+web3.eth.coinbase); 
+            web3.eth.defaultAccount=web3.eth.coinbase;
+            alert("DefaultAccount33:"+web3.eth.defaultAccount);
+
+        var h= result[0].hash;
+            if(!StorageIpfs.hasHash(h)){
+             //  alert("EEE:"+User.hasAddress(uad));
+               alert("Existed");
+              }else{
+
+                var myEvent = StorageIpfs.StorageE();
+                var txHash=StorageIpfs.storeHashToAddress(uad,"wo","inno","pwd12",{from: web3.eth.defaultAccount,gas:3000000});
+                    alert("TX:"+txHash);
+                    myEvent.watch(function(err, result) {
+
+                       if (!err) {
+                            console.log(result);
+                            alert("TX:"+txHash);
+
+                            if(result.transactionHash == txHash){
+                            var acb = User.getUser.call(web3.eth.defaultAccount);
+                            console.log("RRR:"+acb)
+                      }else{
+                           alert("HHH:"+result.transactionHash);
+                         }
+                     } else {
+                         alert("JJJ");
+                         console.log(err);
+                      }
+
+             myEvent.stopWatching();
+     });
+
+}
+
+});
+
+        })
+      }
+      const photo = document.getElementById("photo");
+      reader.readAsArrayBuffer(photo.files[0]); // Read Provided File
+    }
+  </script>
+  <script type="text/javascript">
+    function upload1() {
+      const reader = new FileReader();
+      reader.onloadend = function() {
+        const ipfs = window.IpfsApi('127.0.0.1', 5001) // Connect to IPFS
+        const buf = buffer.Buffer(reader.result) // Convert data into buffer
+        ipfs.files.add(buf, (err, result) => { // Upload buffer to IPFS
+          if(err) {
+            console.error(err)
+            return
+          }
+          alert(result[0].hash);
+          var link = document.createElement('a');
+        
+        })
+      }
+      const photo = document.getElementById("photo");
+      reader.readAsArrayBuffer(photo.files[0]); // Read Provided File
+    }
+
+  </script>
+  <script type="text/javascript">
+    function upload2() {
+
+        var bigstr = document.getElementById("ipfsIn").value;
+        alert("Content:"+bigstr);
+
+      // const reader = new FileReader();
+    //   reader.onloadend = function() {
+         const ipfs = window.IpfsApi('127.0.0.1', 5001) // Connect to IPFS
+         const buf = buffer.Buffer.from(bigstr,'utf-8') // Convert data into buffer
+     //    const buf = buffer.Buffer(reader.result) // Convert data into buffer
+         ipfs.files.add(buf, (err, result) => { // Upload buffer to IPFS
+           if(err) {
+             console.error(err)
+             return
+           }
+           alert(result[0].hash);
+        
+        })
+   
+    }
+  </script>
+  <body>
+
+    <div> Upload Image
+    <form action="/">
+      <fieldset>
+        <legend>Upload photo</legend>
+        <input type="file" name="photo" id="photo" multiple="multiple">
+        <button type="button" onclick="upload()">Upload</button>
+      </fieldset>
+    </form>
+    </br>
+    </br>
+    <a id="url"></a>
+    </br>
+    </br>
+    <img id="output">
+</div>
+<div> Upload File
+    <form action="/">
+        <fieldset>
+          <legend>Upload file</legend>
+          <input type="file" multiple="multiple" name="file" id="file">
+          <button type="button" onclick="upload1()">Upload</button>
+        </fieldset>
+      </form>
+      </br>
+      </br>
+      <a id="url"></a>
+      </br>
+      </br>
+      <img id="output">
+
+</div>
+
+<div>入院登记
+    <form action="/">
+        <fieldset>
+          <legend>Upload file</legend>
+          <input ref="ipfsContent" id="ipfsIn" style="width: 200; height: 40;borderWidth: 2"/>
+    <button type="button" onclick="upload2()">Upload</button>
+
+        </fieldset>
+      </form>
+      </br>
+      </br>
+      <a id="url"></a>
+      </br>
+      </br>
+      <img id="output">
+
+   
+</div>
+<div>
+
+  <div  id='echarts' style="width: 500px;height:400px;border:1px solid #eee"></div>
+</div>
+  </body>
+  <script>
+    var charts = echarts.init(document.getElementById('echarts'))
+    charts.setOption({
+        title:{
+            text: 'hello Echarts'
+        },
+        xAxis: {
+            type: 'category',
+            data: ['Cough', 'Fever', 'Sore throat', 'Difficulty breathing', 'Loss of smell', 'Loss of taste']
+        },
+        yAxis: {
+            type: 'value'
+        },
+        series: [{
+            data: [110, 70, 50,140, 80, 120],
+            type: 'bar'
+        }]
+    })
+</script>
+</html>
